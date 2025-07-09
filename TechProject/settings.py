@@ -181,3 +181,7 @@ LOGGING = {
         },
     },
 }
+
+SILENCED_SYSTEM_CHECKS = [
+    "ckeditor.W001",
+]

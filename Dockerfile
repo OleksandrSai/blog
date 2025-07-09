@@ -20,6 +20,6 @@ COPY . .
 
 # 6. Открываем порт (например, 8000)
 EXPOSE 8000
-
 # 7. Команда при запуске контейнера
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+CMD ["python", "-W", "ignore", "manage.py", "runserver", "0.0.0.0:8000"]

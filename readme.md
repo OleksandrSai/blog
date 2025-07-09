@@ -11,7 +11,7 @@ docker build -t django-app .
 ```
 
 ```bash
-docker run -p 8000:8000 --name django-container django-app
+docker run -p 8000:8000 --name django-containss django-app
 ```
 
 Доступ к приложению
