@@ -1,0 +1,13 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.navbar .navbar-brand {
+    font-weight: bold;
+}
+
+footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}

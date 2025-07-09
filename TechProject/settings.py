@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,9 +26,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-l$kio%meum^#9hgh%#-z2az1%t#th@jhzb7ww_*qc1#z2g3zsb"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -39,6 +42,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "Blog.apps.BlogConfig",
     "django_bootstrap5",
+    "ckeditor",
+    "ckeditor_uploader",
+    "widget_tweaks",
 ]
 
 MIDDLEWARE = [
@@ -122,3 +128,56 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+LOGIN_REDIRECT_URL = "article-list"
+LOGOUT_REDIRECT_URL = "login"
+LOGIN_URL = "login"
+
+load_dotenv()  # зчитає .env
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+CKEDITOR_UPLOAD_PATH = "uploads/"
+
+DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+
+CKEDITOR_ALLOW_NONIMAGE_FILES = False
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "file": {
+            "level": "ERROR",
+            "class": "logging.FileHandler",
+            "filename": "logs/errors.log",
+            "formatter": "verbose",
+        },
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file", "console"],
+            "level": "ERROR",
+            "propagate": True,
+        },
+    },
+}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Підтвердження видалення{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading">Ви впевнені, що хочете видалити статтю?</h4>
+            <p><strong>{{ object.title }}</strong></p>
+            <p class="mb-0">Цю дію не можна скасувати.</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <a href="{% url 'article-detail' object.pk %}" class="btn btn-secondary">Скасувати</a>
+            <button type="submit" class="btn btn-danger">Так, видалити</button>
+        </form>
+    </div>
+{% endblock %}

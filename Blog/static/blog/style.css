@@ -1,0 +1,49 @@
+.card-img-top {
+    object-fit: cover;
+    max-height: 300px;
+}
+
+.card-text {
+    white-space: pre-wrap;
+}
+
+h1, h2 {
+    margin-top: 20px;
+}
+
+.btn + .btn {
+    margin-left: 10px;
+}
+
+/* Center the form container */
+.container {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+/* Full width editor inside centered container */
+.full-width-editor {
+    width: 100%;
+}
+
+/* CKEditor full width styles */
+.cke {
+    width: 100% !important;
+}
+
+.cke_contents {
+    width: 100% !important;
+    box-sizing: border-box;
+}
+
+/* Form elements styling */
+.form-control {
+    width: 100%;
+}
+
+.cke_notifications_area {
+    display: none !important;
+}

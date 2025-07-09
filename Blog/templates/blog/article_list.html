@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Усі статті{% endblock %}
+
+{% block content %}
+    <h1>Усі статті</h1>
+    <div class="row">
+        {% for article in object_list %}
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 p-3 d-flex flex-column justify-content-between" style="height: 100%;">
+                    {% with image_url=article.get_first_image_url %}
+
+                        {% if image_url %}
+
+                            <div class="d-flex align-items-start gap-3">
+                                <img src="{{ image_url }}" alt="{{ article.title }}"
+                                     style="width: 38%; max-height: 200px; object-fit: cover; flex-shrink: 0; border-radius: 4px;">
+                                <div style="width: 62%;">
+                                    <h5 class="card-title">{{ article.title }}</h5>
+                                    <p class="card-text">{{ article.body|striptags|truncatewords:25 }}</p>
+                                    <a href="{% url 'article-detail' article.pk %}" class="btn btn-primary btn-sm">Читати
+                                        далі</a>
+                                </div>
+
+                            </div>
+                        {% else %}
+                            <div>
+
+                                <h5 class="card-title">{{ article.title }}</h5>
+                                <p class="card-text">{{ article.body|striptags|truncatewords:25 }}</p>
+                                <a href="{% url 'article-detail' article.pk %}" class="btn btn-primary btn-sm">Читати
+                                    далі</a>
+                            </div>
+                        {% endif %}
+                        
+                    {% endwith %}
+                    {% if user.is_authenticated %}
+                        <div class="mt-2 d-flex gap-1">
+                            <a href="{% url 'article-update' article.pk %}"
+                               class="btn btn-warning btn-sm">Редагувати</a>
+                            <a href="{% url 'article-delete' article.pk %}" class="btn btn-danger btn-sm"
+                               onclick="return confirm('Ви впевнені, що хочете видалити статтю?');">Видалити</a>
+                        </div>
+                    {% endif %}
+                    <div class="card-footer text-muted mt-auto px-0 border-0 bg-transparent"
+                         style="width: 100%; font-size: 0.875rem;">
+                        Автор: {{ article.author }} • {{ article.created_at|date:"d.m.Y H:i" }}
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p>Жодної статті поки що немає.</p>
+        {% endfor %}
+    </div>
+
+    {# Пагінація #}
+    {% if is_paginated %}
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center mt-4">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">« Перша</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Назад</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">« Перша</span></li>
+                    <li class="page-item disabled"><span class="page-link">Назад</span></li>
+                {% endif %}
+
+                <li class="page-item active">
+                    <span class="page-link">
+                        {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}
+                    </span>
+                </li>
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Далі</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Остання »</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">Далі</span></li>
+                    <li class="page-item disabled"><span class="page-link">Остання »</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+    <div class="container">
+        <h2>{% if form.instance.pk %}Редагування статті{% else %}Нова стаття{% endif %}</h2>
+
+        <form method="post" id="article-form" class="mx-auto" style="max-width: 800px;">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                {{ form.prompt.label_tag }}
+                <div class="input-group">
+                    {{ form.prompt|add_class:"form-control" }}
+                    <button type="button" class="btn btn-primary" id="ask-ai-btn">Сгенерувати статтю через ШІ</button>
+                </div>
+                <div id="ai-response-error" class="text-danger mt-1"></div>
+            </div>
+
+            <div class="mb-3">
+                {{ form.title.label_tag }}
+                {{ form.title|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.body.label_tag }}
+                {{ form.body }}
+            </div>
+
+            <button type="submit" class="btn btn-success">Зберегти</button>
+        </form>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+
+    <script src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+    <script>
+      window.ckeditorUploadUrl = '/ckeditor/upload/';
+      window.ckeditorBrowseUrl = '/ckeditor/browse/';
+    </script>
+    <script>
+
+        // Инициализация CKEditor для поля body
+        if (typeof CKEDITOR !== 'undefined') {
+            CKEDITOR.replace('id_body');
+        }
+
+        // Функция получения CSRF из cookie
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let cookie of cookies) {
+                    cookie = cookie.trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Обработчик кнопки
+        document.getElementById('ask-ai-btn').addEventListener('click', async () => {
+            const promptInput = document.querySelector('input[name="prompt"]');
+            const titleInput = document.querySelector('input[name="title"]');
+            const errorDiv = document.getElementById('ai-response-error');
+
+            const prompt = promptInput.value.trim();
+            if (!prompt) {
+                errorDiv.textContent = "Введіть запит для генерації статті.";
+                return;
+            }
+            errorDiv.textContent = "";
+
+            try {
+
+                const response = await fetch("{% url 'ask_ai' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    body: JSON.stringify({prompt}),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    errorDiv.textContent = errorData.error || "Помилка при генерації.";
+                    return;
+                }
+
+                const data = await response.json();
+
+                titleInput.value = data.title || "";
+
+                if (typeof CKEDITOR !== 'undefined' && CKEDITOR.instances.id_body) {
+                    CKEDITOR.instances.id_body.setData(data.body || "");
+                } else {
+                    const bodyTextarea = document.querySelector('textarea[name="body"]');
+                    if (bodyTextarea) {
+                        bodyTextarea.value = data.body || "";
+                    }
+                }
+                
+            } catch (err) {
+                errorDiv.textContent = "Помилка під час запиту до сервера.";
+                console.error(err);
+            }
+        });
+    </script>
+
+{% endblock %}
